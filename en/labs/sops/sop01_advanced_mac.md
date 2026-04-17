@@ -4,6 +4,22 @@
 > **ISO Domains:** PED (Physical Entity Domain), SCD (Sensing & Controlling)
 > **GreenField Context:** Optimizing radio behavior for high-density sensor environments
 
+> **Firmware required**: This SOP uses the `ieee802154_cli` example, **not** the `ot_cli` from Lab 1. Reflash both boards before starting.
+>
+> ```bash
+> . ~/.espressif/v5.5.3/esp-idf/export.sh
+> cd $IDF_PATH/examples/ieee802154/ieee802154_cli
+> idf.py set-target esp32c6 build
+> idf.py -p /dev/ttyUSB0 flash monitor        # Node A
+> # then in a second terminal, same steps with -p /dev/ttyACM0 for Node B
+> ```
+>
+> Exit `idf.py monitor` with `Ctrl-]` (Ctrl-C resets the chip).
+>
+> `ieee802154_cli` exposes raw MAC-layer commands (`ieee802154 tx`, `set_cca_threshold`, `set_promiscuous`) that OpenThread abstracts away. Exact subcommand names vary slightly between ESP-IDF versions — at the CLI prompt, run `help` first to confirm what's available on your build. If a command below doesn't match, search `help` output for the closest equivalent (e.g. `esp154`, `ieee802154`, or `ed`).
+>
+> To return to Lab 1's network-layer work, reflash `ot_cli` from `$IDF_PATH/examples/openthread/ot_cli`.
+
 ## Objectives
 - Manipulate CSMA-CA parameters (CCA threshold).
 - Observe behavior under "false busy" conditions.

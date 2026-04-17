@@ -4,7 +4,7 @@
 **GreenField Technologies - SoilSense Project**
 **Phase:** Operations (OMD)
 **Duration:** 3 hours
-**ISO Domains:** OMD (Operations & Management), UD (User)
+**ISO Domains:** OMD (Operation and Management), UD (User)
 
 ---
 
@@ -25,7 +25,7 @@ Yesterday, Node #4 died. We don't know why.
 **We are flying blind.** I need a **Health Dashboard**.
 Don't just send me "Soil Moisture." Send me "Battery Voltage", "RSSI", and "Uptime".
 
-**Mission:** Implement the **OMD (Operations & Management)** domain logic.
+**Mission:** Implement the **OMD (Operation and Management)** domain logic.
 
 — Edwin
 
@@ -45,7 +45,7 @@ Don't just send me "Soil Moisture." Send me "Battery Voltage", "RSSI", and "Upti
 
 ```mermaid
 graph TD
-    subgraph OMD [Operations & Management Domain]
+    subgraph OMD [Operation and Management Domain]
         Health[Health Monitor]
         Battery[Battery Level]
         RSSI[Signal Strength]

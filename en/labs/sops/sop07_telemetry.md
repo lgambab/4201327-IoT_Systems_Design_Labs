@@ -1,11 +1,11 @@
 # SOP-07: Telemetry & Dashboards
 
 > **Main Lab Guide:** [Lab 7: Operations & Observability](../lab7.md)
-> **ISO Domains:** OMD (Operations & Management Domain), UD (User Domain)
+> **ISO Domains:** OMD (Operation and Management Domain), UD (User Domain)
 > **GreenField Context:** Detecting "Silent Failures" before crops die
 
 ## Objectives
-Implement the **Operations & Management Domain (OMD)** by reporting device health (Battery, RSSI, Uptime). Visualize this data to detect "Silent Failures."
+Implement the **Operation and Management Domain (OMD)** by reporting device health (Battery, RSSI, Uptime). Visualize this data to detect "Silent Failures."
 
 ## Code Implementation
 

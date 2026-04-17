@@ -46,7 +46,7 @@ Analysis by Samuel shows we are using **HTTP over JSON**. This is too heavy. The
 
 ```mermaid
 graph TD
-    subgraph ASD [Application Service Domain]
+    subgraph ASD [Application and Service Domain]
         CoAP[CoAP Layer]
         CBOR[CBOR Encoding]
     end
