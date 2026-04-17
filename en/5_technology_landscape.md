@@ -37,7 +37,7 @@ Every IoT system maps onto a layered model. The layers below correspond to ISO/I
 └─────────────────────────────────────────────┘
 ```
 
-**Key**: PED = Physical Entity Domain, SCD = Service & Communication Domain, ASD = Application & Service Domain, RAID = Resource Access & Interchange Domain, OMD = Operation & Management Domain, UD = User Domain.
+**Key**: PED = Physical Entity Domain, SCD = Sensing and Controlling Domain, ASD = Application and Service Domain, RAID = Resource Access and Interchange Domain, OMD = Operation and Management Domain, UD = User Domain.
 
 ---
 

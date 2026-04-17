@@ -21,7 +21,7 @@
 
 📖 **New to wireless/radio concepts?** Check the [glossary](../glossary.md) for terms like RSSI, PER, link budget, etc.
 
-> **Advanced Technical Guide:** For deeper exploration after you complete the basics, see [SOP-01: Advanced MAC Layer Tuning](sops/sop01_advanced_mac.md)
+> **Advanced Technical Guide:** For deeper exploration after you complete the basics, see [SOP-01: Advanced MAC Layer Tuning](sops/sop01_advanced_mac.md). Note: SOP-01 uses the `ieee802154_cli` example firmware instead of `ot_cli` — you'll reflash both boards to access raw MAC-layer commands (`ieee802154 tx`, `set_cca_threshold`, etc.) that OpenThread hides.
 
 ---
 
@@ -30,7 +30,9 @@
 ### Your Mission This Week
 
 **From:** Eng. Samuel Cifuentes (Senior Architect)
+
 **To:** IoT Systems Engineering Team
+
 **Subject:** ESP32-C6 Radio Validation
 
 Team,
@@ -187,13 +189,26 @@ idf.py -p /dev/ttyUSB0 flash monitor
 
 **Task 2.1**: Scan all available channels to measure background noise.
 
-On one ESP32-C6, enter these commands:
+### Open the OpenThread CLI
 
+Open a terminal and attach the monitor:
 ```bash
-> scan energy 500 0xffff
+idf.py -p /dev/ttyUSB0 monitor     # adjust port as needed
 ```
 
-This scans all channels (0xffff = channels 11-26 in bitmap) for 500ms each.
+> **Port tip**: ESP32-C6-DevKitC-1 exposes **two USB ports** (USB-JTAG and UART). If you can see logs but can't type commands, switch to the other USB-C port on the board. Use `ls /dev/ttyUSB* /dev/ttyACM*` to see which devices appear.
+
+Exit `idf.py monitor` with `Ctrl-]` (not Ctrl-C, which resets the chip).
+
+At the `esp32c6>` prompt, every OpenThread command is prefixed with `ot`.
+
+### Run the energy scan
+
+```bash
+esp32c6> ot scan energy 500
+```
+
+This scans all 16 channels (11–26) for 500 ms each.
 
 **Expected output**:
 ```
@@ -207,6 +222,8 @@ This scans all channels (0xffff = channels 11-26 in bitmap) for 500ms each.
 | 16 | -84  |
 ...
 ```
+
+*(Values are illustrative. Real idle noise floors are often between -90 and -100 dBm; higher numbers mean a transmitter is nearby on that channel.)*
 
 **How to read this**:
 - **RSSI** = Received Signal Strength Indicator (measured in dBm)
@@ -289,47 +306,93 @@ For 2.45 GHz at 10m: PL ≈ 60 dB
 
 **Goal**: Get Device A and Device B connected so you can test signal strength.
 
-**On Device A** (first device):
+### Two laptops, one board each
+
+You're working in pairs. One student owns **Device A** (will be the leader), the other owns **Device B** (will join as child). Each laptop runs its own ESP-IDF monitor on its own board.
+
+Use the **VS Code ESP-IDF extension's monitor** (or `idf.py monitor` from a terminal — whichever you prefer). Both students should have the `ot_cli` example built and flashed from Task 1.1.
+
+> **Port gotcha**: ESP32-C6-DevKitC-1 has **two USB-C ports** (USB-JTAG and UART). If you can see boot logs but your keystrokes get ignored, switch to the other USB-C port on the board. That was the fix during testing.
+
+Exit the monitor with `Ctrl-]` (in a terminal) or the stop button (in the VS Code extension). Never use Ctrl-C — it resets the chip.
+
+At the `esp32c6>` prompt, every OpenThread command is prefixed with `ot`.
+
+### Bring up Device A (the leader)
+
 ```bash
-> dataset init new
-> dataset channel 15         # Use your selected channel from Part 2
-> dataset commit active
-> ifconfig up
-> thread start
-> state
+esp32c6> ot dataset init new
+esp32c6> ot dataset channel 15           # use your selected channel from Part 2
+esp32c6> ot dataset commit active
+esp32c6> ot ifconfig up
+esp32c6> ot thread start
+esp32c6> ot state
+leader                                    # wait a few seconds for this
 ```
 
-Wait until you see `leader` (Device A is now ready and waiting for Device B).
+### Copy A's full dataset to Device B
 
-**On Device B** (second device):
+Thread requires both devices to share **channel, PAN ID, and network key**. The safest way is to copy A's entire dataset as a hex blob.
+
+On **Device A's laptop**, dump the active dataset:
 ```bash
-> dataset channel 15         # Must match Device A's channel!
-> dataset panid 0xabcd        # Network ID (can be any hex value)
-> dataset commit active
-> ifconfig up
-> thread start
-> state
+esp32c6> ot dataset active -x
+0e080000000000010000000300001735060004001fffe0...0300000f
+Done
 ```
 
-Should show `child` (Device B has connected to Device A successfully ✅).
+Share that long hex string with your partner — paste it into a chat, email, or shared doc. Copying by hand works but is error-prone; the network key is 32 hex chars with no separators.
 
-**What just happened?** You created a simple two-device network. Device A is the coordinator, Device B joined it. Think of it like Device A creating a WiFi hotspot and Device B connecting to it.
-
-**Task 3.2**: Verify connectivity with ping.
-
-On Device B, get Device A's IPv6 address:
+On **Device B's laptop**, paste it back:
 ```bash
-> ipaddr
-fd00:db8::1a2b:3c4d:5e6f (example)
+esp32c6> ot dataset set active 0e080000000000010000000300001735060004001fffe0...0300000f
+esp32c6> ot ifconfig up
+esp32c6> ot thread start
+esp32c6> ot state
+child                                     # or "router" after a short while
 ```
 
-On Device A:
+**What just happened?** You created a simple two-device network. Device A is the leader, Device B joined it. Think of it like Device A creating a WiFi hotspot and Device B connecting to it.
+
+> **Why `dataset set active <hex>` and not set channel/panid individually?** The network key is randomly generated by `dataset init new`. If you only match channel and PAN ID, B will hear A's beacons but fail authentication. Copying the whole dataset guarantees all credentials match.
+
+### Task 3.2: Verify connectivity with ping
+
+Each partner runs `ot ipaddr` on their own board and shares the result:
 ```bash
-> ping fd00:db8::1a2b:3c4d:5e6f
-8 bytes from fd00:db8::1a2b:3c4d:5e6f: icmp_seq=1 time=15ms rssi=-45
+esp32c6> ot ipaddr
+fd43:199e:7729:1f0c:0:ff:fe00:fc00       # RLOC — use this one
+fd43:199e:7729:1f0c:0:ff:fe00:4c01       # another RLOC variant
+fd43:199e:7729:1f0c:7b08:f9ba:d904:498b  # mesh-local EID
+fe80:0:0:0:...                           # link-local (ignore)
+Done
 ```
 
-**Key metric**: Note the RSSI value.
+Use the **RLOC address** (contains `:0:ff:fe00:`) — it's stable and routable on the Thread network.
+
+Exchange RLOC addresses with your partner, then ping each other:
+```bash
+# On Device A's laptop — ping B
+esp32c6> ot ping <Device-B-RLOC>
+16 bytes from fd43:...: icmp_seq=1 hlim=64 time=19ms
+1 packets transmitted, 1 packets received. Packet loss = 0.0%.
+```
+
+```bash
+# On Device B's laptop — ping A
+esp32c6> ot ping <Device-A-RLOC>
+```
+
+Both should succeed with 0% loss at close range. If B→A fails but A→B works, see troubleshooting below.
+
+### See what the child receives (optional but useful)
+
+By default the child auto-replies silently — nothing appears in its terminal. To make RX visible, raise the log level on **either** laptop:
+```bash
+esp32c6> ot log level 5
+```
+
+Level 5 is debug. You'll see MLE/MeshForwarder/IP6 entries with `rssi:-XX` for every frame received. Quiet it back down with `ot log level 1` when you're done.
 
 ---
 
@@ -337,11 +400,48 @@ On Device A:
 
 **Goal**: Find out how far apart sensors can be while still communicating reliably.
 
-**Procedure**:
-1. Start with devices **1 meter apart** (baseline measurement)
-2. Use the `ping` command to send messages and **record the RSSI** (signal strength)
-3. Move Device B further away: **5m, 10m, 20m, 30m...** (use measuring tape)
-4. At each distance, send **100 pings** and count how many fail
+### The full `ot ping` syntax
+
+```
+ot ping <address> [size] [count] [interval] [hoplimit] [timeout]
+```
+
+For 100 pings of 64 bytes at 200 ms intervals:
+```bash
+esp32c6> ot ping fd43:199e:7729:1f0c:0:ff:fe00:4c01 64 100 0.2
+```
+
+Output ends with a summary line — that's your PER reading directly:
+```
+100 packets transmitted, 98 packets received. Packet loss = 2.0%.
+Round-trip min/avg/max = 15/22/58 ms.
+```
+
+### Ping from both sides
+
+RSSI is only reported by the device that **receives** a reply. To capture RSSI at each node, each partner pings the other at every distance:
+
+- Partner A pings B → RSSI shown on A's laptop is the signal B→A.
+- Partner B pings A → RSSI shown on B's laptop is the signal A→B.
+
+Enable debug logging on both laptops **before** the run so each side shows per-packet RSSI:
+```bash
+esp32c6> ot log level 5
+```
+MLE/MeshForwarder lines will include `rssi:-XX` for every received frame.
+
+### Procedure (coordinate with your partner)
+
+1. Start with the two boards **1 meter apart** (baseline).
+2. **Partner A** runs `ot ping <B-RLOC> 64 100 0.2` and records the packet loss from the summary line.
+3. **Wait for A to finish** (about 20 seconds at 0.2 s interval × 100 pings), then **Partner B** runs `ot ping <A-RLOC> 64 100 0.2` and records.
+4. Both partners skim their terminal for the per-packet `rssi:-XX` values and note a rough average.
+5. Move one board further away: **5 m, 10 m, 20 m, 30 m…** (use measuring tape).
+6. Repeat steps 2–5 at each distance.
+
+> **Why not ping simultaneously?** Both devices share the same 802.15.4 channel. Concurrent pings inflate PER artificially (CSMA-CA backoffs, collisions). Take turns.
+
+> **Tip**: keep the payload size fixed (e.g., 64 bytes) across all distances so your PER values are comparable. Larger payloads lose slightly more packets — don't mix sizes.
 
 **What you're measuring**:
 - **RSSI**: Signal strength (higher = better, less negative)
@@ -351,13 +451,15 @@ On Device A:
 
 **Record your results in a table like this**:
 
-| Distance (m) | RSSI (dBm) | Packets Sent | Packets Lost | PER (%) |
-|--------------|------------|--------------|--------------|---------|
-| 1 | -45 | 100 | 0 | 0% | ← Very close, perfect signal
-| 5 | -55 | 100 | 0 | 0% |
-| 10 | -65 | 100 | 1 | 1% | ← Starting to see packet loss
-| 20 | -72 | 100 | 3 | 3% |
-| 30 | -78 | 100 | 10 | 10% | ← Too far! Unreliable
+| Distance (m) | RSSI A→B (dBm) | RSSI B→A (dBm) | PER A→B (%) | PER B→A (%) |
+|---|---|---|---|---|
+| 1 | -45 | -47 | 0% | 0% | ← very close, perfect signal
+| 5 | -55 | -56 | 0% | 0% |
+| 10 | -65 | -67 | 1% | 1% | ← starting to see packet loss
+| 20 | -72 | -75 | 3% | 4% |
+| 30 | -78 | -82 | 10% | 12% | ← too far, unreliable
+
+> Slight asymmetry between A→B and B→A is normal (antenna orientation, local noise floor). A large asymmetry (>10 dB) suggests a blocked antenna or nearby interference on one side.
 
 **How to calculate PER** (Packet Error Rate):
 ```

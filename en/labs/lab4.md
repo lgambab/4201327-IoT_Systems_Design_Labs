@@ -49,7 +49,7 @@ graph TD
         Sensor[Sensor] --> MCU
         MCU --> Actuator[Valve/LED]
     end
-    subgraph ASD [Application Service Domain]
+    subgraph ASD [Application and Service Domain]
         Cloud[Cloud/User] --"Downlink (Command)"--> MCU
         MCU --"Uplink (Ack)"--> Cloud
     end
