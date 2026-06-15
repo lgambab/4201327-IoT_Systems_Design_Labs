@@ -25,7 +25,7 @@
 | Document | Description |
 |----------|-------------|
 | [📖 Course Overview](en/README.md) | Start here - complete course introduction |
-| [⚙️ Setup Guide](en/0_setup.md) | Install ESP-IDF and configure environment |
+| [⚙️ Setup Guide](en/0_0_setup.md) | Install ESP-IDF and configure environment |
 | [🌐 Minimal IoT: HTTP](en/0_2_Minimal_IoT_Implementation_http.md) | Lab 0 - Build a minimal IoT system with HTTP |
 | [📡 Minimal IoT: MQTT](en/0_3_Minimal_IoT_Implementation_mqtt.md) | Lab 1 - Rebuild with MQTT publish/subscribe |
 | [🎯 Project Scenario](en/1_project_scenario.md) | GreenField Technologies - your role as IoT engineer |
@@ -39,32 +39,11 @@
 
 ## 🇪🇸 Español
 
-### [📚 Ir al Curso →](es/)
+> 🚧 **Próximamente.** El contenido del curso está completo en inglés (`en/`). La traducción al español (`es/`) está planeada y se publicará más adelante.
 
-**8 laboratorios prácticos** construyendo un sistema IoT con redes mesh Thread, alineado con el estándar **ISO/IEC 30141:2024**.
-
-**Lo que construirás:**
-- Red de sensores mesh con Thread
-- Protocolo de aplicación CoAP
-- Gateway border router seguro
-- Integración completa con dashboard
+**El curso cubrirá** — 8 laboratorios prácticos construyendo un sistema IoT con redes mesh Thread, alineado con **ISO/IEC 30141:2024**: red de sensores mesh, protocolo CoAP, gateway border router seguro e integración con dashboard.
 
 **Tecnologías:** ESP32-C6, OpenThread, CoAP, CBOR, DTLS
-
----
-
-### Navegación Rápida (Español)
-
-| Documento | Descripción |
-|-----------|-------------|
-| [📖 Vista General del Curso](es/README.md) | Empieza aquí - introducción completa |
-| [⚙️ Guía de Instalación](es/0_preparacion.md) | Instalar ESP-IDF y configurar entorno |
-| [🎯 Escenario del Proyecto](es/1_escenario_proyecto.md) | GreenField Technologies - tu rol como ingeniero IoT |
-| [🏗️ Arquitectura ISO](es/2_arquitectura_iso.md) | Guía de arquitectura de referencia ISO/IEC 30141:2024 |
-| [📝 Plantillas](es/3_plantilla_entregables.md) | Plantillas DDR y ADR para entregables |
-| [🔍 Referencias Rápidas](es/referencias.md) | Hojas de referencia CoAP, Thread, ESP-IDF |
-| [🧪 Labs 1-8](es/labs/) | Guías de laboratorio semanales con contexto de roles |
-| [📐 Guías Detalladas](es/labs/implementacion/) | Referencias de implementación paso a paso |
 
 ---
 
@@ -106,8 +85,9 @@ Week/Semana 7-8:  Dashboard & Integration   →  All 6 ISO Domains
 
 ## 📖 Reference / Referencia
 
-**ISO/IEC 30141:2024 Standard:**
-[ISO_IEC_30141_2024(en).pdf](ISO_IEC_30141_2024(en).pdf) - Internet of Things (IoT) Reference Architecture
+**ISO/IEC 30141:2024** — Internet of Things (IoT) Reference Architecture. The course is
+aligned to this standard. It is copyrighted and is **not** redistributed in this repo;
+obtain it from ISO: [iso.org → ISO/IEC 30141](https://www.iso.org/search.html?q=ISO%2FIEC%2030141).
 
 ---
 
@@ -127,14 +107,11 @@ Week/Semana 7-8:  Dashboard & Integration   →  All 6 ISO Domains
 ### English Course
 1. Go to [en/](en/)
 2. Read [en/README.md](en/README.md)
-3. Follow [en/0_setup.md](en/0_setup.md)
+3. Follow [en/0_0_setup.md](en/0_0_setup.md)
 4. Start [en/labs/lab1.md](en/labs/lab1.md)
 
 ### Curso en Español
-1. Ir a [es/](es/)
-2. Leer [es/README.md](es/README.md)
-3. Seguir [es/0_preparacion.md](es/0_preparacion.md)
-4. Comenzar [es/labs/lab1.md](es/labs/lab1.md)
+🚧 Próximamente — la versión en español está planeada. Por ahora, sigue el curso en inglés ([en/](en/)).
 
 ---
 
@@ -144,7 +121,7 @@ Week/Semana 7-8:  Dashboard & Integration   →  All 6 ISO Domains
 4201327-IoT_Systems_Design_Labs/
 │
 ├── README.md                    (This file / Este archivo)
-├── ISO_IEC_30141_2024(en).pdf  (Standard / Estándar)
+│                                (ISO/IEC 30141:2024 — external, see References)
 │
 ├── en/                          🇬🇧 English Course
 │   ├── README.md                   Course overview
@@ -160,19 +137,11 @@ Week/Semana 7-8:  Dashboard & Integration   →  All 6 ISO Domains
 │       ├── lab1.md - lab8.md
 │       └── sops/                   Detailed guides
 │
-├── http_simple/                 ESP-IDF project for Lab 0 (HTTP)
-├── mqtt_simple/                 ESP-IDF project for Lab 1 (MQTT)
+├── http_simple/                 ESP-IDF project for Lab 0 (HTTP) — planned
+├── mqtt_simple/                 ESP-IDF project for Lab 1 (MQTT) — planned
 │
-├── es/                          🇪🇸 Curso en Español
-│   ├── README.md                   Vista general del curso
-│   ├── 0_preparacion.md            Instalación del entorno
-│   ├── 1_escenario_proyecto.md     Proyecto GreenField
-│   ├── 2_arquitectura_iso.md       Guía ISO/IEC 30141
-│   ├── 3_plantilla_entregables.md  Plantillas DDR y ADR
-│   ├── referencias.md              Referencias rápidas
-│   └── labs/                       8 guías de laboratorio
-│       ├── lab1.md - lab8.md
-│       └── implementacion/         Guías detalladas
+├── es/                          🇪🇸 Curso en Español (planned)
+│   └── ...                          Spanish translation — coming soon
 │
 └── tools/                       🛠️ Utilities (language-agnostic)
     ├── coap_client.py
@@ -187,4 +156,4 @@ Week/Semana 7-8:  Dashboard & Integration   →  All 6 ISO Domains
 **Ready to build professional IoT systems?**
 **¿Listo para construir sistemas IoT profesionales?**
 
-→ [English Course](en/) | [Curso en Español](es/)
+→ [English Course](en/) | Curso en Español (próximamente)
